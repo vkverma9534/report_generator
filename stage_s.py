@@ -45,3 +45,7 @@ plt.ylabel("Quantity Sold")
 plt.grid(True)
 plt.tight_layout()
 plt.savefig("return_trend.png")
+
+
+
+os.makedirs("assets", exist_ok=True)
