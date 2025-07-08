@@ -1,6 +1,8 @@
 import streamlit as st
 import os
 import sqlite3
+from fpdf import FPDF
+import pandas as pd
 
 # 🛠 Ensure assets folder exists
 os.makedirs("assets", exist_ok=True)
@@ -56,7 +58,62 @@ if inv_file and sales_file and ret_file:
         if not found:
             st.warning("⚠️ No data found for this product.")
         else:
-            st.image("assets/sales_trend.png", caption="📈 Sales vs Returns Trend", use_column_width=True)
+            st.image("assets/sales_trend.png", caption="Sales Trend", use_column_width=True)
+            st.image("assets/returns_trend.png", caption="Returns Trend", use_column_width=True)
+
+            def generate_pdf_report(product_name):
+                pdf = FPDF()
+                pdf.set_auto_page_break(auto=True, margin=10)
+                pdf.add_page()
+                pdf.set_font("Arial", "B", 16)
+                pdf.cell(0, 10, f"Report for Product: {product_name}", ln=True)
+
+                # Images
+                for img, title in [("category_pie.png", "Category Pie Chart"),
+                                   ("sales_trend.png", "Sales Trend"),
+                                   ("returns_trend.png", "Returns Trend")]:
+                    path = f"assets/{img}"
+                    if os.path.exists(path):
+                        pdf.ln(5)
+                        pdf.set_font("Arial", "B", 14)
+                        pdf.cell(0, 10, title, ln=True)
+                        pdf.image(path, w=160)
+                
+                # CSV Tables
+                csv_files = [
+                    ("Top 5 Sold Products", "top5sold.csv"),
+                    ("Top 5 Returned Products", "top5return.csv"),
+                    ("Top 5 Vendors", "top5vendors.csv"),
+                    ("Worst 5 Vendors", "worst5vendors.csv"),
+                    ("Top 5 Stock Deficient", "top5stockdef.csv"),
+                    ("Sales by Category", "categories.csv"),
+                    ("Concern Inventory Rows", "concern_inventory.csv"),
+                    ("Concern Sales Rows", "concern_sales.csv"),
+                    ("Concern Return Rows", "concern_returns.csv"),
+                    ("Null Inventory Rows", "inventory_null.csv"),
+                    ("Null Sales Rows", "sales_null.csv"),
+                    ("Null Return Rows", "returns_null.csv"),
+                ]
+
+                for title, file in csv_files:
+                    path = file
+                    if os.path.exists(path):
+                        try:
+                            df = pd.read_csv(path)
+                            pdf.add_page()
+                            pdf.set_font("Arial", "B", 14)
+                            pdf.cell(0, 10, title, ln=True)
+                            pdf.set_font("Arial", "", 10)
+                            for index, row in df.iterrows():
+                                row_str = " | ".join(str(x) for x in row.tolist())
+                                pdf.multi_cell(0, 7, row_str)
+                        except:
+                            pass
+
+                pdf.output("assets/final_report.pdf")
+
+            generate_pdf_report(product)
+
             with open("assets/final_report.pdf", "rb") as f:
                 st.download_button("📥 Download PDF Report", f, file_name=f"{product}_report.pdf", mime="application/pdf")
 
@@ -66,7 +123,7 @@ if inv_file and sales_file and ret_file:
     if st.button("📊 Show Category Distribution Pie Chart"):
         from stage_3 import run as run_stage3
         run_stage3()
-        st.image("assets/category_pie.png", caption="🧩 Product Distribution by Category", use_column_width=True)
+        st.image("assets/category_pie.png", caption="Product Distribution by Category", use_column_width=True)
 
 else:
     st.info("⬆️ Please upload all three messy CSVs to begin.")
