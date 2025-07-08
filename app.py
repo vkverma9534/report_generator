@@ -18,11 +18,11 @@ ret_file = st.file_uploader("Upload Returns CSV", type=["csv"])
 
 # ✅ Process files if all uploaded
 if inv_file and sales_file and ret_file:
-    with open("inventory_raw.csv", "wb") as f:
+    with open("inventory_real_messy.csv", "wb") as f:
         f.write(inv_file.getbuffer())
-    with open("sales_raw.csv", "wb") as f:
+    with open("sales_real_messy.csv", "wb") as f:
         f.write(sales_file.getbuffer())
-    with open("returns_raw.csv", "wb") as f:
+    with open("returns_real_messy.csv", "wb") as f:
         f.write(ret_file.getbuffer())
 
     st.success("✅ Files uploaded successfully. Starting processing pipeline...")
@@ -37,7 +37,7 @@ if inv_file and sales_file and ret_file:
     run_stage2a()
     st.success("✅ Stage 2A: Data loaded to SQLite.")
 
-    # 🧠 Stage 2B: SQL logic
+    # 🧠 Stage 2B: SQL analysis
     from stage_2b import run as run_stage2b
     run_stage2b()
     st.success("✅ Stage 2B: SQL analysis complete.")
