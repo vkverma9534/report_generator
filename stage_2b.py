@@ -1,9 +1,10 @@
 import sqlite3
-%load_ext sql
-%sql sqlite:///mydb.db    
-    
-%%sql
 
+conn = sqlite3.connect("mydb.db")
+cur = conn.cursor()
+
+# Drop existing concern tables
+cur.executescript("""
 DROP TABLE IF EXISTS concern_inventory;
 DROP TABLE IF EXISTS concern_sales;
 DROP TABLE IF EXISTS concern_returns;
@@ -11,21 +12,20 @@ DROP TABLE IF EXISTS concern_returns;
 CREATE TABLE concern_inventory AS
 SELECT product_name, vendor_id, stock_quantity, upload_date, category
 FROM INVENTORY
-WHERE (product_name IS NULL OR vendor_id IS NULL  )
+WHERE (product_name IS NULL OR vendor_id IS NULL)
   AND stock_quantity > 400;
 
 CREATE TABLE concern_sales AS
 SELECT product_name, vendor_id, quantity_sold, sale_date, category
 FROM SALES
-WHERE (product_name IS NULL OR vendor_id IS NULL  )
+WHERE (product_name IS NULL OR vendor_id IS NULL)
   AND quantity_sold > 600;
 
 CREATE TABLE concern_returns AS
 SELECT product_name, vendor_id, return_quantity, return_date, category
 FROM RETURNS
-WHERE (product_name IS NULL OR vendor_id IS NULL )
+WHERE (product_name IS NULL OR vendor_id IS NULL)
   AND return_quantity > 100;
-
 
 DELETE FROM INVENTORY
 WHERE product_name IS NULL OR vendor_id IS NULL OR stock_quantity IS NULL;
@@ -42,8 +42,6 @@ DROP TABLE IF EXISTS TOP5VENDORS;
 DROP TABLE IF EXISTS WORST5VENDORS;
 DROP TABLE IF EXISTS TOP5STOCKDEF;
 
-
-
 CREATE TABLE TOP5SOLD AS
 SELECT 
     product_name,
@@ -55,6 +53,7 @@ GROUP BY
 ORDER BY 
     total_quantity_sold DESC
 LIMIT 5;
+
 CREATE TABLE TOP5RETURN AS
 SELECT 
     product_name,
@@ -66,6 +65,7 @@ GROUP BY
 ORDER BY 
     total_quantity_returned DESC
 LIMIT 5;
+
 CREATE TABLE TOP5VENDORS AS
 SELECT 
     vendor_id,
@@ -77,6 +77,7 @@ GROUP BY
 ORDER BY 
     total_quantity_sold DESC
 LIMIT 5;
+
 CREATE TABLE WORST5VENDORS AS
 SELECT 
     vendor_id,
@@ -100,10 +101,6 @@ ORDER BY
     SUM(stock_quantity) ASC
 LIMIT 5;
 
-DECLARE @total INT;
-SET @total = 5;
-
-
 CREATE TABLE CATEGORIES AS
 SELECT 
     category,
@@ -111,6 +108,8 @@ SELECT
 FROM 
     SALES
 GROUP BY 
-    category
+    category;
+""")
 
-;
+conn.commit()
+conn.close()
