@@ -4,7 +4,6 @@ def run():
     conn = sqlite3.connect("mydb.db")
     cur = conn.cursor()
 
-    # Drop existing concern tables and create new ones based on conditions
     cur.executescript("""
     DROP TABLE IF EXISTS concern_inventory;
     DROP TABLE IF EXISTS concern_sales;
@@ -93,13 +92,14 @@ def run():
 
     CREATE TABLE TOP5STOCKDEF AS
     SELECT 
-        product_name
+        product_name,
+        SUM(stock_quantity) AS total_stock
     FROM 
         INVENTORY
     GROUP BY 
         product_name
     ORDER BY 
-        SUM(stock_quantity) ASC
+        total_stock ASC
     LIMIT 5;
 
     CREATE TABLE CATEGORIES AS
