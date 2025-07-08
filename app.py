@@ -28,22 +28,22 @@ if inv_file and sales_file and ret_file:
     st.success("✅ Files uploaded successfully. Starting processing pipeline...")
 
     # 🚦 Stage 1: Renaming, cleaning, null extraction
-    from backend.stage_1 import run as run_stage1
+    from stage_1 import run as run_stage1
     run_stage1()
     st.success("✅ Stage 1: Cleaning & renaming complete.")
 
     # 🔄 Stage 2A: Load cleaned CSVs into SQLite
-    from backend.stage_2a import run as run_stage2a
+    from stage_2a import run as run_stage2a
     run_stage2a()
     st.success("✅ Stage 2A: Data loaded to SQLite.")
 
-    # 🧠 Stage 2B: Run SQL logic via Python
-    from backend.stage_2b import run as run_stage2b
+    # 🧠 Stage 2B: SQL logic
+    from stage_2b import run as run_stage2b
     run_stage2b()
     st.success("✅ Stage 2B: SQL analysis complete.")
 
     # 📤 Stage 2C: Export concern rows as CSV
-    from backend.stage_2c import run as run_stage2c
+    from stage_2c import run as run_stage2c
     run_stage2c()
     st.success("✅ Stage 2C: Concern data exported.")
 
@@ -51,7 +51,7 @@ if inv_file and sales_file and ret_file:
     product = st.text_input("🔍 Search for a product name (case-insensitive)")
 
     if product:
-        from backend.stage_s import run as run_stage_s
+        from stage_s import run as run_stage_s
         found = run_stage_s(product)
         if not found:
             st.warning("⚠️ No data found for this product.")
@@ -64,7 +64,7 @@ if inv_file and sales_file and ret_file:
 
     # 📊 Category Pie Chart
     if st.button("📊 Show Category Distribution Pie Chart"):
-        from backend.stage_3 import run as run_stage3
+        from stage_3 import run as run_stage3
         run_stage3()
         st.image("assets/category_pie.png", caption="🧩 Product Distribution by Category", use_column_width=True)
 
