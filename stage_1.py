@@ -18,11 +18,14 @@ def run():
     import streamlit as st
     import requests
 
-    def rename_stocks(column_names_stocks, dictionary_stocks, model="llama3-8b-8192", api_key=None):
-        if api_key is None:
-            api_key = st.secrets["GROQ_API_KEY"]
+    import streamlit as st
+import requests
 
-        prompt = f"""
+def rename_stocks(column_names_stocks, dictionary_stocks, model="llama3-8b-8192", api_key=None):
+    if api_key is None:
+        api_key = st.secrets["GROQ_API_KEY"]
+
+    prompt = f"""
 You are given a list of messy column names. Your job is to map each of them to at most one matching field from this dictionary:
 
 {', '.join(dictionary_stocks)}
@@ -46,6 +49,7 @@ product_name:name vendor_id:v_id stock_quantity:available_quantity upload_date:u
 Now give only the output:
 """
 
+    try:
         response = requests.post(
             url="https://api.groq.com/openai/v1/chat/completions",
             headers={
@@ -54,22 +58,34 @@ Now give only the output:
             },
             json={
                 "model": model,
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ],
+                "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0,
                 "max_tokens": 100
             }
         )
-
+        response.raise_for_status()
         result = response.json()
         return result['choices'][0]['message']['content'].strip()
 
-    def rename_sales(column_names_sales, dictionary_sales, model="llama3-8b-8192", api_key=None):
-        if api_key is None:
-            api_key = st.secrets["GROQ_API_KEY"]
+    except requests.exceptions.RequestException as e:
+        st.error(f"🚨 API request failed: {e}")
+        return ""
 
-        prompt = f"""
+    except ValueError:
+        st.error("🚨 Could not parse Groq API response as JSON.")
+        st.text("Response content:")
+        st.text(response.text)  # Optional debug
+        return ""
+
+
+    import streamlit as st
+import requests
+
+def rename_sales(column_names_sales, dictionary_sales, model="llama3-8b-8192", api_key=None):
+    if api_key is None:
+        api_key = st.secrets["GROQ_API_KEY"]
+
+    prompt = f"""
 You are given a list of messy column names. Your job is to map each of them to at most one matching field from this dictionary:
 
 {', '.join(dictionary_sales)}
@@ -85,14 +101,15 @@ Messy column names:
 - Format: dictionary_name:input_name
 - Output must be strictly space-separated. No punctuation. No explanation. No duplicate targets.
 - there might be usage of code intead of id
-- try to make sense and be acconutable of what you output it might be life saving for many people
+- try to make sense and be accountable of what you output it might be life saving for many people
 
 ✅ Example Output:
-   product_name:prod_name vendor_id:v_code quantity_sold:sold_qty sale_date:saleDate category:item_category
+product_name:prod_name vendor_id:v_code quantity_sold:sold_qty sale_date:saleDate category:item_category
 
 Now give only the output:
 """
 
+    try:
         response = requests.post(
             url="https://api.groq.com/openai/v1/chat/completions",
             headers={
@@ -101,22 +118,31 @@ Now give only the output:
             },
             json={
                 "model": model,
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ],
+                "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0,
                 "max_tokens": 100
             }
         )
-
+        response.raise_for_status()
         result = response.json()
         return result['choices'][0]['message']['content'].strip()
 
-    def rename_returns(column_names_returns, dictionary_returns, model="llama3-8b-8192", api_key=None):
-        if api_key is None:
-            api_key = st.secrets["GROQ_API_KEY"]
+    except requests.exceptions.RequestException as e:
+        st.error(f"🚨 API request failed: {e}")
+        return ""
 
-        prompt = f"""
+    except ValueError:
+        st.error("🚨 Could not parse Groq API response as JSON.")
+        st.text("Raw response content:")
+        st.text(response.text)
+        return ""
+
+
+    def rename_returns(column_names_returns, dictionary_returns, model="llama3-8b-8192", api_key=None):
+    if api_key is None:
+        api_key = st.secrets["GROQ_API_KEY"]
+
+    prompt = f"""
 You are given a list of messy column names. Your job is to map each of them to at most one matching field from this dictionary:
 
 {', '.join(dictionary_returns)}
@@ -131,15 +157,16 @@ Messy column names:
 - Skip dictionary fields if no matching input column is found.
 - Format: dictionary_name:input_name
 - Output must be strictly space-separated. No punctuation. No explanation. No duplicate targets.
-- there might be usage of code intead of id
-- try to make sense and be acconutable of what you output it might be life saving for many people
+- there might be usage of code instead of id
+- try to make sense and be accountable of what you output it might be life saving for many people
 
 ✅ Example Output:
-   product_name:prod_name vendor_id:v_id return_quantity:qty return_date:date category:item_category
+product_name:prod_name vendor_id:v_id return_quantity:qty return_date:date category:item_category
 
 Now give only the output:
 """
 
+    try:
         response = requests.post(
             url="https://api.groq.com/openai/v1/chat/completions",
             headers={
@@ -148,16 +175,24 @@ Now give only the output:
             },
             json={
                 "model": model,
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ],
+                "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0,
                 "max_tokens": 100
             }
         )
-
+        response.raise_for_status()
         result = response.json()
         return result['choices'][0]['message']['content'].strip()
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"🚨 API request failed: {e}")
+        return ""
+
+    except ValueError:
+        st.error("🚨 Could not parse Groq API response as JSON.")
+        st.text("Raw response content:")
+        st.text(response.text)
+        return ""
 
     dictionary_stocks = ["product_name", "vendor_id", "stock_quantity", "upload_date", "category"]
     assigned_name_stocks = rename_stocks(column_names_stocks, dictionary_stocks)
