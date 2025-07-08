@@ -2,6 +2,10 @@ def run():
     import pandas as pd
     import numpy as np
     import matplotlib.pyplot as plt
+    import os
+
+    # Ensure assets folder exists
+    os.makedirs("assets", exist_ok=True)
 
     stocks_df = pd.read_csv("inventory_sql_clean.csv")
     sales_df = pd.read_csv("sales_sql_clean.csv")
@@ -32,4 +36,5 @@ def run():
     )
     plt.title('Sales Distribution')
     plt.axis('equal')
-    plt.savefig("category_div.png")
+    plt.savefig("assets/category_pie.png")
+    plt.close()
