@@ -23,7 +23,7 @@ def generate_pdf_report():
     pdf.add_page()
 
     # Add pie chart first
-    pie_path = os.path.join("assets", "category_pie.png")
+    pie_path = os.path.join("assets", "category_div.png")
     if os.path.exists(pie_path):
         pdf.set_font("Arial", "B", 14)
         pdf.cell(0, 10, "Category Pie Chart", ln=True)
