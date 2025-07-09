@@ -14,11 +14,12 @@ st.markdown("Upload your messy CSVs, generate trends, analyze issues, and downlo
 st.markdown("Instructions of uploads:-")
 st.markdown("- This is report generator site and this requires some columns to be mandatorily be present")
 st.markdown("   for it's proper functioning.")
-st.markdown("-> Inventory - 'product name','Vendor ID','stock quantity','upload date','category of product'.")
-st.markdown("-> Sales - 'product name','Vendor ID','quantity sold','sell date','category of product'.")
-st.markdown("-> Returns - 'product name','Vendor ID','return quantity','return date','category of product'.")
+st.markdown("-> Inventory - 'product_name','Vendor_ID','stock_quantity','upload_date','category_of_product'.")
+st.markdown("-> Sales - 'product_name','Vendor_ID','quantity_sold','sale_date','category_of_product'.")
+st.markdown("-> Returns - 'product_name','Vendor_ID','return_quantity','return_date','category_of_product'.")
 st.markdown("-> NOTE   -  You do not need to worry about order and name of columns as our AI powered tool will apprehend it")
 st.markdown("             just keep the name easy to understand.")
+st.markdown("(If the site crashes try again after renaming the columns and refreshing the site.)")
 
 
 # Upload section
